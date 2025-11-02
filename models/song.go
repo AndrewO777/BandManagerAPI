@@ -1,10 +1,12 @@
 package models
 
+import "time"
+
 type Song struct {
 	ID int `json:"id"`
-	SongName string `json:"SongName"`
-	BandName string `json:"BandName"`
-	PlayCount uint16 `json:"PlayCount"`
-	CurrentConfidence byte `json:"CurrentConfidence"`
-	LastPlayed []uint8 `json:"LastPlayed"`
+	SongName string `json:"songName"`
+	BandName string `json:"bandName"`
+	PlayCount uint16 `json:"playCount"`
+	CurrentConfidence byte `json:"currentConfidence"`
+	LastPlayed time.Time `json:"lastPlayed"`
 }
