@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/AndrewO777/BandPracticeAPI/models"
-	"github.com/AndrewO777/BandPracticeAPI/db"
 )
 
 func RegisterSongRoutes(r *gin.Engine) {
@@ -13,21 +12,10 @@ func RegisterSongRoutes(r *gin.Engine) {
 }
 
 func GetSongs(c *gin.Context) {
-	rows, err := db.DB.Query("SELECT * FROM LearnedSongs")
+	songs, err := models.GetSongs()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
-	}
-	defer rows.Close()
-
-	var songs []models.Song
-	for rows.Next() {
-		var song models.Song
-		if err := rows.Scan(&song.ID, &song.SongName, &song.BandName, &song.PlayCount, &song.CurrentConfidence, &song.LastPlayed); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		songs = append(songs, song)
 	}
 	c.JSON(http.StatusOK, songs)
 }
@@ -41,11 +29,7 @@ func UpdateSong(c *gin.Context) {
 		return
 	}
 	
-	query := `UPDATE LearnedSongs 
-		SET SongName = ?, BandName = ?, PlayCount = ?, CurrentConfidence = ?, LastPlayed = ? 
-		WHERE ID = ?`
-	
-	_, err := db.DB.Exec(query, song.SongName, song.BandName, song.PlayCount, song.CurrentConfidence, song.LastPlayed, id)
+	err := models.UpdateSong(song, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
